@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# Usage:
+#     ./checker <url> [<delay (in seconds, default: 60)>] [<action to be done at url when change is detected (default: chromium)>]
+#
+#     Press CTRL+C to exit infinite loop.
+#
+# Author: quetzelcoatlus (https://github.com/quetzelcoatlus), AD 2018
+
+trap 'echo " Okay, I will stop. Bye :)"; exit 2' INT
+
+if [ -z $1 ]
+then
+	echo "Usage: ./checker <url> [<delay (in seconds, default: 60)>] [<action to be done at url when change is detected (default: chromium)>]"
+	exit 1
+fi
+
+if [ ! -z $2 ]
+then
+	delay=$2
+else
+	delay=60
+fi
+
+if [ ! -z $3 ]
+then
+	action=$3
+else
+	action="chromium"
+fi
+
+prev=`curl -s -H 'Cache-Control: no-cache' $1 | md5sum | awk '{printf $1}'`
+
+while true
+do
+	hash=`curl -s -H 'Cache-Control: no-cache' $1 | md5sum | awk '{printf $1}'`
+	if [ "$prev" != "$hash" ]
+	then
+		eval $action $1
+		exit 0
+	fi
+	prev=$hash
+	sleep $delay
+done
