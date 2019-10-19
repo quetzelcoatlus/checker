@@ -19,11 +19,11 @@ declare -r url=${1}
 declare -r delay=${2:-60}
 declare -r action=${3:-chromium}
 
-prev=`curl -s -H 'Cache-Control: no-cache' $1 | md5sum | awk '{printf $1}'`
+prev=`curl -s -H 'Cache-Control: no-cache' ${url} | md5sum | awk '{printf $1}'`
 
 while true
 do
-	hash=`curl -s -H 'Cache-Control: no-cache' $1 | md5sum | awk '{printf $1}'`
+	hash=`curl -s -H 'Cache-Control: no-cache' ${url} | md5sum | awk '{printf $1}'`
 	if [ "${prev}" != "${hash}" ]
 	then
 		eval ${action} ${url}
