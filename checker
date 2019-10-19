@@ -15,30 +15,20 @@ then
 	exit 1
 fi
 
-if [ ! -z $2 ]
-then
-	delay=$2
-else
-	delay=60
-fi
-
-if [ ! -z $3 ]
-then
-	action=$3
-else
-	action="chromium"
-fi
+declare -r url=${1}
+declare -r delay=${2:-60}
+declare -r action=${3:-chromium}
 
 prev=`curl -s -H 'Cache-Control: no-cache' $1 | md5sum | awk '{printf $1}'`
 
 while true
 do
 	hash=`curl -s -H 'Cache-Control: no-cache' $1 | md5sum | awk '{printf $1}'`
-	if [ "$prev" != "$hash" ]
+	if [ "${prev}" != "${hash}" ]
 	then
-		eval $action $1
+		eval ${action} ${url}
 		exit 0
 	fi
-	prev=$hash
-	sleep $delay
+	prev=${hash}
+	sleep ${delay}
 done
